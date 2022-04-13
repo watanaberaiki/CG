@@ -49,8 +49,31 @@ int WINAPI WinMain(HINSTANCE,HINSTANCE,LPSTR,int) {
 
 	//ウィンドウを表示状態にする
 	ShowWindow(hwnd,SW_SHOW);
-	//コンソールへの文字出力
-	OutputDebugStringA("Hello,DirectX!!\n");
 
+	MSG msg{};	//メッセージ
+	//DirectX初期化処理 ここから
+	
+
+	//DirectX初期化処理 ここまで
+
+
+	//ゲームループ
+	while (true) {
+		//メッセージがある？
+		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+			TranslateMessage(&msg);	//キー入力メッセージの処理
+			DispatchMessage(&msg);	//プロシージャにメッセージを送る
+		}
+
+		//×ボタンで終了メッセージが来たらゲームループを抜ける
+		if (msg.message == WM_QUIT) {
+			break;
+		}
+		//DirectX毎フレーム処理 ここから
+
+		//DirectX毎フレーム処理 ここまで
+	}
+	//ウィンドウクラスを登録解除
+	UnregisterClass(w.lpszClassName,w.hInstance);
 	return 0;
 }
