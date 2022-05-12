@@ -235,7 +235,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(result));
 
 
-
 	//DirectX‰Šú‰»ˆ— ‚±‚±‚Ü‚Å
 
 	//•`‰æ‰Šú‰»ˆ— ‚±‚±‚©‚ç
