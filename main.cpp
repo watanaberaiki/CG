@@ -258,17 +258,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	};
 
 
-	float transformX = 0.0f;
-	float transformY = 0.0f;
-	float rotation = 0.0f;
-	float scale = 1.0f;
-
-	float affin[3][3] = {
-			{1.0f,0.0f,0.0f},
-			{0.0f,1.0f,0.0f},
-			{0.0f,0.0f,1.0f}
-	};
-
 	// インデックスデータ
 	unsigned short indices[] = {
 		0, 1, 2, // 三角形1つ目
@@ -537,24 +526,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(result));
 
 	// 値を書き込むと自動的に転送される
-	constMapMaterial->color = XMFLOAT4(1, 1, 200, 0.5f);              // RGBAで半透明の赤
-
-	//// 横方向ピクセル数
-	//const size_t textureWidth = 256;
-	//// 縦方向ピクセル数
-	//const size_t textureHeight = 256;
-	//// 配列の要素数
-	//const size_t imageDataCount = textureWidth * textureHeight;
-	//// 画像イメージデータ配列
-	//XMFLOAT4* imageData = new XMFLOAT4[imageDataCount]; // ※必ず後で解放する
-
-	//// 全ピクセルの色を初期化
-	//for (size_t i = 0; i < imageDataCount; i++) {
-	//		imageData[i].x = 1.0f;    // R
-	//		imageData[i].y = 0.0f;    // G
-	//		imageData[i].z = 0.0f;    // B
-	//		imageData[i].w = 1.0f;    // A
-	//}
+	constMapMaterial->color = XMFLOAT4(100, 1, 1, 1.0f);              // RGBA
 
 	TexMetadata metadata{};
 	ScratchImage scratchImg{};
@@ -746,66 +718,6 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		}
 		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 
-		//transformX = 0.0f;
-		//transformY = 0.0f;
-		//rotation = 0.0f;
-		//scale = 1.0f;
-
-		////キー入力
-		////平行移動
-		//if (key[DIK_W]) {
-		//	transformY += 0.01f;
-		//}
-
-		//if (key[DIK_S]) {
-		//	transformY -= 0.01f;
-		//}
-
-		//if (key[DIK_A]) {
-		//	transformX -= 0.01f;
-		//}
-
-		//if (key[DIK_D]) {
-		//	transformX += 0.01f;
-		//}
-
-		////拡大縮小
-		//if (key[DIK_Z]) {
-		//	scale += 0.01f;
-		//}
-
-		//if (key[DIK_C]) {
-		//	scale -= 0.01f;
-		//}
-
-		//// 回転
-		//if (key[DIK_Q]) {
-		//	rotation -= PI / 32;
-		//}
-
-		//if (key[DIK_E]) {
-		//	rotation += PI / 32;
-		//}
-
-		////アフィン行列の生成
-		//affin[0][0] = scale * cos(rotation);
-		//affin[0][1] = scale * (-sin(rotation));
-		//affin[0][2] = transformX;
-
-		//affin[1][0] = scale * sin(rotation);
-		//affin[1][1] = scale * cos(rotation);
-		//affin[1][2] = transformY;
-
-		//affin[2][0] = 0.0f;
-		//affin[2][1] = 0.0f;
-		//affin[2][2] = 1.0f;
-
-		////アフィン変換
-		//for (int i = 0; i < _countof(vertices); i++) {
-		//	vertices[i] = vertices[0] * affin[0][0] + vertices[1] * affin[0][1] + 1.0f * affin[0][2];
-		//	vertices[1] = vertices[0] * affin[1][0] + vertices[1] * affin[1][1] + 1.0f * affin[1][2];
-		//	vertices[2] = vertices[0] * affin[2][0] + vertices[1] * affin[2][1] + 1.0f * affin[2][2];
-		//}
 
 		// 全頂点に対して
 		for (int i = 0; i < _countof(vertices); i++) {
