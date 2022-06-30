@@ -913,21 +913,22 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		matRot *= XMMatrixRotationX(XMConvertToRadians(rotation.x));
 		matRot *= XMMatrixRotationY(XMConvertToRadians(rotation.y));
 
-
-		if (key[DIK_D] || key[DIK_A]) {
+		//カメラ
+		if (key[DIK_D] || key[DIK_A] ) {
 			if (key[DIK_D]) {
 				angle += XMConvertToRadians(1.0f);
 			}
 			else if (key[DIK_A]) {
 				angle -= XMConvertToRadians(1.0f);
 			}
-
 			//angleラジアンだけY軸周りに回転。半径は-100
 			eye.x = -100 * sinf(angle);
 			eye.z = -100 * cosf(angle);
 			//ビュー変換行列
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 		}
+
+		//↓オブジェクト
 		//いずれかのキーを押していたら
 		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
 		{
@@ -938,9 +939,16 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 			else if (key[DIK_LEFT]) { position.x -= 1.0f; }
 		}
 
+		//回転
+		if (key[DIK_Q] || key[DIK_E])
+		{
+			if (key[DIK_Q]) { rotation.z += 1.0f; }
+			else if (key[DIK_E]) { rotation.z -= 1.0f; }
+		}
+
 		XMMATRIX matTrans;	//平行移動行列
 		matTrans = XMMatrixTranslation(position.x, position.y, position.z);
-		
+
 		matWorld = XMMatrixIdentity();
 		matWorld *= matScale;//ワールド行列にスケーリング
 		matWorld *= matRot;
