@@ -207,6 +207,25 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 		device->CreateRenderTargetView(backBuffers[i], &rtvDesc, rtvHandle);
 	}
 
+	//リソース設定
+	D3D12_RESOURCE_DESC depthResourceDesc{};
+	depthResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
+	depthResourceDesc.Width = window_width;//レンダーターゲットに合わせる
+	depthResourceDesc.Height = window_height;//レンダーターゲットに合わせる
+	depthResourceDesc.DepthOrArraySize = 1;
+	depthResourceDesc.Format = DXGI_FORMAT_D32_FLOAT;//深度値フォーマット
+	depthResourceDesc.SampleDesc.Count = 1;
+	depthResourceDesc.Flags = D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
+
+	//深度値用ヒーププロパティ
+	D3D12_HEAP_PROPERTIES deptHeapProp{};
+	deptHeapProp.Type = D3D12_HEAP_TYPE_DEFAULT;
+	//深度値のクリア設定
+	D3D12_CLEAR_VALUE depthClearValue{};
+	depthClearValue.DepthStencil.Depth = 1.0f;//深度値1.0f(最大値)でクリア
+	depthClearValue.Format = DXGI_FORMAT_D32_FLOAT;//深度値フォーマット
+
+
 	// フェンスの生成
 	ID3D12Fence* fence = nullptr;
 	UINT64 fenceVal = 0;
@@ -262,18 +281,63 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	// 頂点データ
 	Vertex vertices[] = {
 		// x      y     z       u     v
-		{{-50.0f, -50.0f, 0.0f}, {0.0f, 1.0f}}, // 左下
-		{{-50.0f, 50.0f, 0.0f}, {0.0f, 0.0f}}, // 左上
-		{{50.0f, -50.0f, 0.0f}, {1.0f, 1.0f}}, // 右下
-		{{50.0f, 50.0f, 0.0f}, {1.0f, 0.0f}}, // 右上
+		//前
+		{{-5.0f, -5.0f, -5.0f}, {0.0f, 1.0f}}, // 左下
+		{{-5.0f, 5.0f, -5.0f}, {0.0f, 0.0f}}, // 左上
+		{{5.0f, -5.0f, -5.0f}, {1.0f, 1.0f}}, // 右下
+		{{5.0f, 5.0f, -5.0f}, {1.0f, 0.0f}}, // 右上
+		//後(前面とZ座標の符号が逆)
+		{{-5.0f, -5.0f, 5.0f}, {0.0f, 1.0f}}, // 左下
+		{{-5.0f, 5.0f, 5.0f}, {0.0f, 0.0f}}, // 左上
+		{{5.0f, -5.0f, 5.0f}, {1.0f, 1.0f}}, // 右下
+		{{5.0f, 5.0f, 5.0f}, {1.0f, 0.0f}}, // 右上
+		//左
+		{{-5.0f, -5.0f, -5.0f}, {0.0f, 1.0f}}, // 左下
+		{{-5.0f, -5.0f, 5.0f}, {0.0f, 0.0f}}, // 左上
+		{{-5.0f, 5.0f, -5.0f}, {1.0f, 1.0f}}, // 右下
+		{{-5.0f, 5.0f, 5.0f}, {1.0f, 0.0f}}, // 右上
+		//右(左面とX座標の符号が逆)
+		{{5.0f, -5.0f, -5.0f}, {0.0f, 1.0f}}, // 左下
+		{{5.0f, -5.0f, 5.0f}, {0.0f, 0.0f}}, // 左上
+		{{5.0f, 5.0f, -5.0f}, {1.0f, 1.0f}}, // 右下
+		{{5.0f, 5.0f, 5.0f}, {1.0f, 0.0f}}, // 右上
+		//下
+		{{-5.0f, -5.0f, -5.0f}, {0.0f, 1.0f}}, // 左下
+		{{-5.0f, -5.0f, 5.0f}, {0.0f, 0.0f}}, // 左上
+		{{5.0f, -5.0f, -5.0f}, {1.0f, 1.0f}}, // 右下
+		{{5.0f, -5.0f, 5.0f}, {1.0f, 0.0f}}, // 右上
+		//上(下面とY座標の符号が逆)
+		//下
+		{{-5.0f, 5.0f, -5.0f}, {0.0f, 1.0f}}, // 左下
+		{{-5.0f, 5.0f, 5.0f}, {0.0f, 0.0f}}, // 左上
+		{{5.0f, 5.0f, -5.0f}, {1.0f, 1.0f}}, // 右下
+		{{5.0f, 5.0f, 5.0f}, {1.0f, 0.0f}}, // 右上
+	
 	};
 
 
 
 	// インデックスデータ
 	unsigned short indices[] = {
+		//前
 		0, 1, 2, // 三角形1つ目
 		1, 2, 3, // 三角形2つ目
+		//後
+		4,5,6,	//三角形3つ目
+		5,6,7,	//三角形4つ目
+		//左
+		8,9,10,
+		9,10,11,
+		//右
+		12,13,14,
+		13,14,15,
+		//下
+		16,17,18,
+		17,18,19,
+		//上
+		20,21,22,
+		21,22,23,
+
 	};
 
 	// 頂点データ全体のサイズ = 頂点データ一つ分のサイズ * 頂点データの要素数
@@ -554,7 +618,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	assert(SUCCEEDED(result));
 
 	// 値を書き込むと自動的に転送される
-	constMapMaterial->color = XMFLOAT4(1, 1, 200, 0.5f);              // RGBAで半透明の赤
+	constMapMaterial->color = XMFLOAT4(1, 1, 1, 1.0f);              // RGBAで半透明の赤
 
 
 	ID3D12Resource* constBuffTransform = nullptr;
@@ -654,7 +718,7 @@ int WINAPI WinMain(HINSTANCE, HINSTANCE, LPSTR, int) {
 	ScratchImage scratchImg{};
 	// WICテクスチャのロード
 	result = LoadFromWICFile(
-		L"Resources/lavender.jpg",   //「Resources」フォルダの「lavender.jpg」
+		L"Resources/mario.jpg",   //「Resources」フォルダの「lavender.jpg」
 		WIC_FLAGS_NONE,
 		&metadata, scratchImg);
 
