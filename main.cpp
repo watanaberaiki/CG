@@ -405,10 +405,14 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//DirectX初期化処理 ここまで
 
+
+
 	//描画初期化処理 ここから
 	// 
 
-
+	//重力
+	float gravity = -1.0f;
+	int isUp = 0;
 
 	//スケーリング倍率
 	XMFLOAT3 scale;
@@ -776,7 +780,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 	//3Dオブジェクトの数
-	const size_t kObjectCount = 50;
+	const size_t kObjectCount = 1;
 	//3Dオブジェクトの配列
 	Object3d object3ds[kObjectCount];
 
@@ -784,19 +788,19 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//初期化
 		InitializeObject3d(&object3ds[i], device.Get());
 
-		//ここから↓は親子構造のサンプル
-		//先頭以外なら
-		if (i > 0) {
-			//一つ前のオブジェクトを親オブジェクトとする
-			object3ds[i].parent = &object3ds[i - 1];
-			//親オブジェクトの9割の大きさ
-			object3ds[i].scale = { 0.9f,0.9f,0.9f };
-			//親オブジェクトに対してZ軸周りに30度回転
-			object3ds[i].rotation = { 0.0f,0.0f,XMConvertToRadians(30.0f) };
+		////ここから↓は親子構造のサンプル
+		////先頭以外なら
+		//if (i > 0) {
+		//	//一つ前のオブジェクトを親オブジェクトとする
+		//	object3ds[i].parent = &object3ds[i - 1];
+		//	//親オブジェクトの9割の大きさ
+		//	object3ds[i].scale = { 0.9f,0.9f,0.9f };
+		//	//親オブジェクトに対してZ軸周りに30度回転
+		//	object3ds[i].rotation = { 0.0f,0.0f,XMConvertToRadians(30.0f) };
 
-			//親オブジェクトに対してZ方向-8.0ずらす
-			object3ds[i].position = { 0.0f,0.0f,-8.0f };
-		}
+		//	//親オブジェクトに対してZ方向-8.0ずらす
+		//	object3ds[i].position = { 0.0f,0.0f,-8.0f };
+		//}
 	}
 
 
@@ -816,7 +820,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//ビュー変換行列
 	XMMATRIX matView;
-	XMFLOAT3 eye(0, 0, -100);	//視点座標
+	XMFLOAT3 eye(0, 0, -500);	//視点座標
 	XMFLOAT3 target(0, 0, 0);	//注視点座標
 	XMFLOAT3 up(0, 1, 0);		//上方向ベクトル
 	matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
@@ -1172,12 +1176,21 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//座標操作
 
-		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
+		isUp = 0;
+
+		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT]|| key[DIK_SPACE])
 		{
-			if (key[DIK_UP]) { object3ds[0].position.y += 1.0f; }
-			else if (key[DIK_DOWN]) { object3ds[0].position.y -= 1.0f; }
+			if (key[DIK_UP]) { object3ds[0].position.z += 1.0f; }
+			else if (key[DIK_DOWN]) { object3ds[0].position.z -= 1.0f; }
 			if (key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
 			else if (key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
+			if(key[DIK_SPACE]){ isUp = 1;}
+		}
+		if (isUp == 0) {
+			object3ds[0].position.y += gravity;
+		}
+		else if (isUp == 1) {
+			object3ds[0].position.y -= gravity;
 		}
 
 		for (size_t i = 0; i < _countof(object3ds); i++)
