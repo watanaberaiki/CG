@@ -1167,32 +1167,32 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 
-		////カメラ
-		//if (key[DIK_D] || key[DIK_A]) {
-		//	if (key[DIK_D]) {
-		//		angle += XMConvertToRadians(1.0f);
-		//	}
-		//	else if (key[DIK_A]) {
-		//		angle -= XMConvertToRadians(1.0f);
-		//	}
-		//	//angleラジアンだけY軸周りに回転。半径は-100
-		//	eye.x = -100 * sinf(angle);
-		//	eye.z = -100 * cosf(angle);
+		//カメラ
+		if (input->TriggerKey(DIK_D) || input->TriggerKey(DIK_A)) {
+			if (input->TriggerKey(DIK_D)) {
+				angle += XMConvertToRadians(1.0f);
+			}
+			else if (input->TriggerKey(DIK_A)) {
+				angle -= XMConvertToRadians(1.0f);
+			}
+			//angleラジアンだけY軸周りに回転。半径は-100
+			eye.x = -100 * sinf(angle);
+			eye.z = -100 * cosf(angle);
 			//ビュー変換行列
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
-	/*	}*/
+		}
 
 
 
 		////座標操作
 
-		//if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
-		//{
-		//	if (key[DIK_UP]) { object3ds[0].position.y += 1.0f; }
-		//	else if (key[DIK_DOWN]) { object3ds[0].position.y -= 1.0f; }
-		//	if (key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
-		//	else if (key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
-		//}
+		if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT))
+		{
+			if (input->PushKey(DIK_UP)) { object3ds[0].position.y += 1.0f; }
+			else if (input->PushKey(DIK_DOWN)) { object3ds[0].position.y -= 1.0f; }
+			if (input->PushKey(DIK_RIGHT)) { object3ds[0].position.x += 1.0f; }
+			else if (input->PushKey(DIK_LEFT)) { object3ds[0].position.x -= 1.0f; }
+		}
 
 		for (size_t i = 0; i < _countof(object3ds); i++)
 		{
