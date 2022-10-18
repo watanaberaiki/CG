@@ -8,6 +8,7 @@
 #include <string>
 #include <DirectXMath.h>
 #include<math.h>
+#include "Input.h"
 
 #include <wrl.h>
 using namespace Microsoft::WRL;
@@ -382,26 +383,36 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	UINT64 fenceVal = 0;
 	result = device->CreateFence(fenceVal, D3D12_FENCE_FLAG_NONE, IID_PPV_ARGS(&fence));
 
-	// DirectInputの初期化
-	IDirectInput8* directInput = nullptr;
-	result = DirectInput8Create(
-		w.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
-	assert(SUCCEEDED(result));
+	//// DirectInputの初期化
+	//IDirectInput8* directInput = nullptr;
+	//result = DirectInput8Create(
+	//	w.hInstance, DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&directInput, nullptr);
+	//assert(SUCCEEDED(result));
 
-	// キーボードデバイスの生成
-	IDirectInputDevice8* keyboard = nullptr;
-	result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
-	assert(SUCCEEDED(result));
+	//// キーボードデバイスの生成
+	//IDirectInputDevice8* keyboard = nullptr;
+	//result = directInput->CreateDevice(GUID_SysKeyboard, &keyboard, NULL);
+	//assert(SUCCEEDED(result));
 
-	// 入力データ形式のセット
-	result = keyboard->SetDataFormat(&c_dfDIKeyboard); // 標準形式
-	assert(SUCCEEDED(result));
+	//// 入力データ形式のセット
+	//result = keyboard->SetDataFormat(&c_dfDIKeyboard); // 標準形式
+	//assert(SUCCEEDED(result));
 
-	// 排他制御レベルのセット
-	result = keyboard->SetCooperativeLevel(
-		hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
-	assert(SUCCEEDED(result));
+	//// 排他制御レベルのセット
+	//result = keyboard->SetCooperativeLevel(
+	//	hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE | DISCL_NOWINKEY);
+	//assert(SUCCEEDED(result));
 
+
+	//ポインタ
+	Input* input = nullptr;
+
+	//入力の初期化
+	input = new Input();
+	input->Initialize(w.hInstance,hwnd);
+
+	//入力開放
+	delete input;
 
 	//DirectX初期化処理 ここまで
 
