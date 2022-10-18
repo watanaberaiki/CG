@@ -148,6 +148,10 @@ LRESULT WindowProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
+	//ポインタ
+	Input* input = nullptr;
+
+	
 	const int window_width = 1200; //横幅
 	const int window_height = 720; //縦幅
 
@@ -404,15 +408,13 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//assert(SUCCEEDED(result));
 
 
-	//ポインタ
-	Input* input = nullptr;
+	
 
 	//入力の初期化
 	input = new Input();
 	input->Initialize(w.hInstance,hwnd);
 
-	//入力開放
-	delete input;
+
 
 	//DirectX初期化処理 ここまで
 
@@ -1096,14 +1098,15 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		}
 		//DirectX毎フレーム処理 ここから
 
-		// キーボード情報の取得開始
-		keyboard->Acquire();
+		//// キーボード情報の取得開始
+		//keyboard->Acquire();
 
-		// 全キーの入力状態を取得する
-		BYTE key[256] = {};
-		keyboard->GetDeviceState(sizeof(key), key);
+		//// 全キーの入力状態を取得する
+		//BYTE key[256] = {};
+		//keyboard->GetDeviceState(sizeof(key), key);
 
-
+		//入力の更新
+		input->Update();
 
 		// バックバッファの番号を取得(2つなので0番か1番)
 		UINT bbIndex = swapChain->GetCurrentBackBufferIndex();
@@ -1127,10 +1130,10 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 3.画面クリア R G B A
 		FLOAT clearColor[] = { 0.1f,0.25f, 0.5f,0.0f }; // 青っぽい色
-		//スペースキーが押されたら
-		if (key[DIK_SPACE]) {
-			clearColor[0] = { 0.7f };
-		}
+		////スペースキーが押されたら
+		//if (key[DIK_SPACE]) {
+		//	clearColor[0] = { 0.7f };
+		//}
 		commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
 		commandList->ClearDepthStencilView(dsvHandle, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
@@ -1164,32 +1167,32 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 
 
-		//カメラ
-		if (key[DIK_D] || key[DIK_A]) {
-			if (key[DIK_D]) {
-				angle += XMConvertToRadians(1.0f);
-			}
-			else if (key[DIK_A]) {
-				angle -= XMConvertToRadians(1.0f);
-			}
-			//angleラジアンだけY軸周りに回転。半径は-100
-			eye.x = -100 * sinf(angle);
-			eye.z = -100 * cosf(angle);
+		////カメラ
+		//if (key[DIK_D] || key[DIK_A]) {
+		//	if (key[DIK_D]) {
+		//		angle += XMConvertToRadians(1.0f);
+		//	}
+		//	else if (key[DIK_A]) {
+		//		angle -= XMConvertToRadians(1.0f);
+		//	}
+		//	//angleラジアンだけY軸周りに回転。半径は-100
+		//	eye.x = -100 * sinf(angle);
+		//	eye.z = -100 * cosf(angle);
 			//ビュー変換行列
 			matView = XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
-		}
+	/*	}*/
 
 
 
-		//座標操作
+		////座標操作
 
-		if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
-		{
-			if (key[DIK_UP]) { object3ds[0].position.y += 1.0f; }
-			else if (key[DIK_DOWN]) { object3ds[0].position.y -= 1.0f; }
-			if (key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
-			else if (key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
-		}
+		//if (key[DIK_UP] || key[DIK_DOWN] || key[DIK_RIGHT] || key[DIK_LEFT])
+		//{
+		//	if (key[DIK_UP]) { object3ds[0].position.y += 1.0f; }
+		//	else if (key[DIK_DOWN]) { object3ds[0].position.y -= 1.0f; }
+		//	if (key[DIK_RIGHT]) { object3ds[0].position.x += 1.0f; }
+		//	else if (key[DIK_LEFT]) { object3ds[0].position.x -= 1.0f; }
+		//}
 
 		for (size_t i = 0; i < _countof(object3ds); i++)
 		{
@@ -1292,6 +1295,10 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		assert(SUCCEEDED(result));
 		//DirectX毎フレーム処理 ここまで
 	}
+
+	//入力開放
+	delete input;
+
 	//ウィンドウクラスを登録解除
 	UnregisterClass(w.lpszClassName, w.hInstance);
 	return 0;
