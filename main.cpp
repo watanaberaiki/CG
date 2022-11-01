@@ -157,8 +157,6 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	winApp = new WinApp();
 	winApp->Initialize();
 
-	MSG msg{};
-
 
 	
 	//DirectX初期化処理 ここから
@@ -1059,15 +1057,11 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//ゲームループ
 	while (true) {
 		//メッセージがある？
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			TranslateMessage(&msg);	//キー入力メッセージの処理
-			DispatchMessage(&msg);	//プロシージャにメッセージを送る
-		}
-
-		//×ボタンで終了メッセージが来たらゲームループを抜ける
-		if (msg.message == WM_QUIT) {
+		if (winApp->ProcessMesseage()) {
+			//ゲームループを抜ける
 			break;
 		}
+
 		//DirectX毎フレーム処理 ここから
 
 		//// キーボード情報の取得開始

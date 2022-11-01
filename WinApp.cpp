@@ -53,6 +53,24 @@ void WinApp::Update()
 	
 }
 
+bool WinApp::ProcessMesseage()
+{
+	MSG msg{};
+
+	//メッセージがある？
+	if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		TranslateMessage(&msg);//キー入力メッセージの処理
+		DispatchMessage(&msg);//プロシージャにメッセージを送る
+	}
+
+	//×ボタンで終了メッセージが来たらゲームループを抜ける
+	if (msg.message == WM_QUIT) {
+		return true;
+	}
+
+	return false;
+}
+
 void WinApp::Finalize()
 {
 	//ウィンドウクラスを登録解除
