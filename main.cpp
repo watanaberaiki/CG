@@ -1,6 +1,5 @@
 #include <d3dcompiler.h>
 #include <DirectXTex.h>
-#include <Windows.h>
 #include <d3d12.h>
 #include <dxgi1_6.h>
 #include <cassert>
