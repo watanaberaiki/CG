@@ -264,7 +264,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	// スワップチェーンの生成
 	result = dxgiFactory->CreateSwapChainForHwnd(
 		commandQueue.Get(),
-		hwnd,
+		winApp->GetHwnd(),
 		&swapChainDesc,
 		nullptr,
 		nullptr,
@@ -309,8 +309,8 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//リソース設定
 	D3D12_RESOURCE_DESC depthResourceDesc{};
 	depthResourceDesc.Dimension = D3D12_RESOURCE_DIMENSION_TEXTURE2D;
-	depthResourceDesc.Width = window_width;//レンダーターゲットに合わせる
-	depthResourceDesc.Height = window_height;//レンダーターゲットに合わせる
+	depthResourceDesc.Width = WinApp::window_width;//レンダーターゲットに合わせる
+	depthResourceDesc.Height = WinApp::window_height;//レンダーターゲットに合わせる
 	depthResourceDesc.DepthOrArraySize = 1;
 	depthResourceDesc.Format = DXGI_FORMAT_D32_FLOAT;//深度値フォーマット
 	depthResourceDesc.SampleDesc.Count = 1;
@@ -384,7 +384,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//入力の初期化
 	input = new Input();
-	input->Initialize(w.hInstance,hwnd);
+	input->Initialize(winApp->GetHInstance(), winApp->GetHwnd());
 
 
 
@@ -795,7 +795,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//透視投影変換行列の計算
 	XMMATRIX matProjection = XMMatrixPerspectiveFovLH(
 		XMConvertToRadians(45.0f),
-		(float)window_width / window_height,
+		(float)WinApp::window_width / WinApp::window_height,
 		0.1f, 1000.0f
 	);
 
@@ -1176,8 +1176,8 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// ビューポート設定コマンド
 		D3D12_VIEWPORT viewport{};
-		viewport.Width = window_width;
-		viewport.Height = window_height;
+		viewport.Width = WinApp::window_width;
+		viewport.Height = WinApp::window_height;
 		viewport.TopLeftX = 0;
 		viewport.TopLeftY = 0;
 		viewport.MinDepth = 0.0f;
@@ -1188,9 +1188,9 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		// シザー矩形
 		D3D12_RECT scissorRect{};
 		scissorRect.left = 0;                                       // 切り抜き座標左
-		scissorRect.right = window_width;        // 切り抜き座標右
+		scissorRect.right = WinApp::window_width;        // 切り抜き座標右
 		scissorRect.top = 0;                                        // 切り抜き座標上
-		scissorRect.bottom = window_height;		// 切り抜き座標下
+		scissorRect.bottom = WinApp::window_height;		// 切り抜き座標下
 
 
 
@@ -1273,7 +1273,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete winApp;
 
 	//ウィンドウクラスを登録解除
-	UnregisterClass(w.lpszClassName, w.hInstance);
+	UnregisterClass(w.lpszClassName,winApp->GetHInstance());
 	return 0;
 }
 
