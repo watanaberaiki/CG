@@ -1,4 +1,5 @@
 #pragma once
+#include"WinApp.h"
 #include <Windows.h>
 #include<cassert>
 #define DIRECTINPUT_VERSION     0x0800   // DirectInputのバージョン指定
@@ -18,7 +19,7 @@ public:
 public://メンバ関数
 
 	//初期化
-	void Initialize(HINSTANCE hInstance, HWND  hwnd);
+	void Initialize(WinApp* winApp);
 	//更新
 	void Update();
 	//キーチェック
@@ -32,6 +33,7 @@ private://メンバ変数
 	//前回の全キーの状態
 	BYTE keyPre[256] = {};
 	ComPtr<IDirectInputDevice8> keyboard=nullptr;
-
+	//WindowsAPI
+	WinApp* winApp = nullptr;
 };
 

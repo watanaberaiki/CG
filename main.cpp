@@ -157,7 +157,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	winApp = new WinApp();
 	winApp->Initialize();
 
-
+	MSG msg{};
 
 
 	
@@ -384,7 +384,7 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//入力の初期化
 	input = new Input();
-	input->Initialize(winApp->GetHInstance(), winApp->GetHwnd());
+	input->Initialize(winApp);
 
 
 
@@ -1270,10 +1270,13 @@ int WINAPI WinMain(_In_ HINSTANCE,_In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//入力開放
 	delete input;
+
+	//WindowsAPIの終了処理
+	winApp->Finalize();
+	
+	//WindowsAPIの解放
 	delete winApp;
 
-	//ウィンドウクラスを登録解除
-	UnregisterClass(w.lpszClassName,winApp->GetHInstance());
 	return 0;
 }
 
