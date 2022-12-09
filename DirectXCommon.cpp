@@ -349,4 +349,5 @@ void DirectXCommon::UpdateFixFPS() {
 	//Œ»İ‚ÌŠÔ
 	reference_ = std::chrono::steady_clock::now();
 
+
 }
