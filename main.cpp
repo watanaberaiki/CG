@@ -185,8 +185,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 //基盤システムの初期化
 	
-//　最初のシーンの初期化
+//最初のシーンの初期化
+	//OBJからモデルデータを読み込む
+	Model* model = Model::LoadFromObj("triangle_mat");
+	//3Dオブジェクト生成
 	Object3d* object3d = Object3d::Create();
+	//オブジェクトにモデルを紐づける
+	object3d->SetModel(model);
 
 //最初のシーンの初期化
 
@@ -849,10 +854,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 //	ibView.Format = DXGI_FORMAT_R16_UINT;
 //	ibView.SizeInBytes = sizeIB;
 
-
-
-
-
 	//描画初期化処理 ここまで
 
 	//ゲームループ
@@ -1022,19 +1023,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//入力開放
 	delete input;
-
 	//WindowsAPIの終了処理
 	winApp->Finalize();
-
 	//WindowsAPIの解放
 	delete winApp;
-
 	//DirectX解放
 	delete dxCommon;
-
 	//3dオブジェクト解放
 	delete object3d;
-
+	//3Dモデル解放
+	delete model;
 	//delete spriteCommon;
 
 //基盤システムの終了

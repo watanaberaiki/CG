@@ -6,6 +6,7 @@
 #include <DirectXMath.h>
 #include <d3dx12.h>
 #include<string.h>
+#include "Model.h"
 
 /// <summary>
 /// 3Dオブジェクト
@@ -109,6 +110,10 @@ public: // 静的メンバ関数
 	/// <param name="move">移動量</param>
 	static void CameraMoveVector(XMFLOAT3 move);
 
+	/// <summary>
+	/// モデルのセッター
+	/// </summary>
+	void SetModel(Model* model) { this->model = model;}
 private: // 静的メンバ変数
 	// デバイス
 	static ID3D12Device* device;
@@ -219,7 +224,8 @@ public: // メンバ関数
 
 private: // メンバ変数
 	//ComPtr<ID3D12Resource> constBuff; // 定数バッファ
-
+	//モデル
+	Model* model = nullptr;
 	ComPtr<ID3D12Resource> constBuffB0; // 定数バッファ
 	ComPtr<ID3D12Resource> constBuffB1; // 定数バッファ
 
