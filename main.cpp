@@ -12,8 +12,9 @@
 #include "Input.h"
 #include"WinApp.h"
 #include"DirectXCommon.h"
-
-
+#include"Sprite.h"
+#include"SpriteCommon.h"
+#include"Object3d.h"
 
 
 //using namespace Microsoft::WRL;
@@ -153,11 +154,13 @@
 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
-#pragma region　基盤システムの初期化
+//　基盤システムの初期化
 	//ポインタ
 	Input* input = nullptr;
 	WinApp* winApp = nullptr;
 	DirectXCommon* dxCommon = nullptr;
+	/*SpriteCommon* spriteCommon = nullptr;*/
+
 
 	//WindowsAPIの初期化
 	winApp = new WinApp();
@@ -172,8 +175,20 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	input = new Input();
 	input->Initialize(winApp);
 
-#pragma endregion 基盤システムの初期化
-	//DirectX初期化処理 ここから
+	//3Dオブジェクト静的初期化
+	Object3d::StaticInitialize(dxCommon->GetDevice(), winApp->window_width, winApp->window_height);
+
+
+	////スプライト共通部の初期化
+	//spriteCommon = new SpriteCommon();
+	//spriteCommon->Initialize(dxCommon);
+
+//基盤システムの初期化
+	
+//　最初のシーンの初期化
+	Object3d* object3d = Object3d::Create();
+
+//最初のシーンの初期化
 
 #ifdef _DEBUG
 	
@@ -842,6 +857,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//ゲームループ
 	while (true) {
+//　基盤システムの更新
+
+
 		//メッセージがある？
 		if (winApp->ProcessMesseage()) {
 			//ゲームループを抜ける
@@ -853,6 +871,28 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		//入力の更新
 		input->Update();
 
+		// オブジェクト移動
+		if (input->PushKey(DIK_UP) || input->PushKey(DIK_DOWN) || input->PushKey(DIK_RIGHT) || input->PushKey(DIK_LEFT)|| input->PushKey(DIK_W)|| input->PushKey(DIK_S))
+		{
+			// 現在の座標を取得
+			DirectX::XMFLOAT3 position = object3d->GetPosition();
+
+			// 移動後の座標を計算
+			if (input->PushKey(DIK_UP)) { position.y += 1.0f; }
+			else if (input->PushKey(DIK_DOWN)) { position.y -= 1.0f; }
+			if (input->PushKey(DIK_RIGHT)) { position.x += 1.0f; }
+			else if (input->PushKey(DIK_LEFT)) { position.x -= 1.0f; }
+			if (input->PushKey(DIK_W)) { position.z += 1.0f; }
+			else if (input->PushKey(DIK_S)) { position.z -= 1.0f; }
+
+			// 座標の変更を反映
+			object3d->SetPosition(position);
+		}
+		//基盤システムの更新
+		object3d->Update();
+
+
+		/*sprite->Update();*/
 
 		//for (int i = 0; i < _countof(indices) / 3; i++)
 		//{//三角形1つごとに計算していく
@@ -921,6 +961,24 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		dxCommon->PreDraw();
 
+//最初のシーンの描画
+
+		//3dオブジェクト描画前処理
+		Object3d::PreDraw(dxCommon->GetCommandlist());
+
+		//3dオブジェクトの描画
+		object3d->Draw();
+
+		//3dオブジェクト描画後処理
+		Object3d::PostDraw();
+
+		//スプライト前処理
+
+		/*sprite->Draw();*/
+
+//最初のシーンの描画
+
+		dxCommon->PostDraw();
 		//// パイプラインステートとルートシグネチャの設定コマンド
 		//dxCommon->GetCommandlist()->SetPipelineState(pipelineState.Get());
 		//dxCommon->GetCommandlist()->SetGraphicsRootSignature(rootSignature.Get());
@@ -955,9 +1013,12 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		// 4.描画コマンドここまで
 
-		dxCommon->PostDraw();
+		
 		////DirectX毎フレーム処理 ここまで
 	}
+	
+//　基盤システムの終了
+
 
 	//入力開放
 	delete input;
@@ -970,6 +1031,13 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	//DirectX解放
 	delete dxCommon;
+
+	//3dオブジェクト解放
+	delete object3d;
+
+	//delete spriteCommon;
+
+//基盤システムの終了
 
 	return 0;
 }
