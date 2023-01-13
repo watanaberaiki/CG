@@ -9,7 +9,7 @@
 
 ID3D12Device* Model::device = nullptr;
 
-Model* Model::LoadFromObj(const std::string& modelname)
+Model* Model::LoadFromObj(const std::string& modelname, XMFLOAT3 minModel, XMFLOAT3 maxModel)
 {
 
 	//新たなModel型のインスタンスのメモリを確保
@@ -18,7 +18,7 @@ Model* Model::LoadFromObj(const std::string& modelname)
 	model->InitializeDescriptorHeap();
 
 	//読み込み
-	model->LoadFromOBJInternal(modelname);
+	model->LoadFromOBJInternal(modelname, minModel, maxModel);
 
 	//バッファ生成
 	model->CreateBuff();
@@ -26,7 +26,7 @@ Model* Model::LoadFromObj(const std::string& modelname)
 	return model;
 }
 
-void Model::LoadFromOBJInternal(const std::string& modelname)
+void Model::LoadFromOBJInternal(const std::string& modelname, XMFLOAT3 minModel, XMFLOAT3 maxModel)
 {
 	//ファイルストリーム
 	std::ifstream file;
@@ -68,6 +68,42 @@ void Model::LoadFromOBJInternal(const std::string& modelname)
 			line_stream >> position.x;
 			line_stream >> position.y;
 			line_stream >> position.z;
+			//最小のX座標を記録
+			if (position.x < minModel.x) {
+				minModel.x = position.x;
+			}
+			//最大のX座標を記録
+			else if (position.x>maxModel.x) {
+				maxModel.x = position.x;
+			}
+			else {
+
+			}
+			
+			//最小のy座標を記録
+			if (position.y < minModel.y) {
+				minModel.y = position.y;
+			}
+			//最大のy座標を記録
+			else if (position.y > maxModel.y) {
+				maxModel.y = position.y;
+			}
+			else {
+
+			}
+
+			//最小のz座標を記録
+			if (position.z < minModel.z) {
+				minModel.z = position.z;
+			}
+			//最大のz座標を記録
+			else if (position.z > maxModel.z) {
+				maxModel.z = position.z;
+			}
+			else {
+
+			}
+
 			//座標データに追加
 			positions.emplace_back(position);
 			////頂点データに追加
@@ -125,7 +161,8 @@ void Model::LoadFromOBJInternal(const std::string& modelname)
 
 
 	}
-
+	this->minModel = minModel;
+	this->maxModel = maxModel;
 	//ファイルを閉じる
 	file.close();
 }

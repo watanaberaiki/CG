@@ -10,13 +10,13 @@ class Model
 {
 public:
 	//OBJファイルから3Dモデルを読み込む
-	static Model* LoadFromObj(const std::string& modelname);
+	static Model* LoadFromObj(const std::string& modelname, XMFLOAT3 minModel, XMFLOAT3 maxModel);
 	//デバイスセッター
 	static void SetDevice(ID3D12Device* device) { Model::device = device; }
 
 private:
 	//OBJファイルから3Dモデルを読み込む
-	void LoadFromOBJInternal(const std::string& modelname);
+	void LoadFromOBJInternal(const std::string& modelname,XMFLOAT3 minModel, XMFLOAT3 maxModel);
 	//バッファ生成
 	void CreateBuff();
 	//マテリアル読み込み
@@ -28,6 +28,9 @@ private:
 public://メンバ関数
 	//描画
 	void Draw(ID3D12GraphicsCommandList*cmdList,UINT rootParamIndexMaterial);
+	//ゲッター
+	XMFLOAT3 GetminModel()const { return minModel; }
+	XMFLOAT3 GetmaxModel()const { return maxModel; }
 public:
 	//サブクラス
 	// 頂点データ構造体
@@ -91,6 +94,8 @@ private://メンバ変数
 	CD3DX12_GPU_DESCRIPTOR_HANDLE gpuDescHandleSRV;
 	// 定数バッファ
 	ComPtr<ID3D12Resource> constBuffB1;
+	//最小、最大
+	XMFLOAT3 minModel = {}, maxModel = {};
 private://静的メンバ変数
 	// デバイス
 	static ID3D12Device* device;

@@ -198,7 +198,7 @@ public: // メンバ関数
 	/// <summary>
 	/// 毎フレーム処理
 	/// </summary>
-	void Update();
+	void Update(XMMATRIX &matView);
 
 	/// <summary>
 	/// 描画
@@ -221,6 +221,12 @@ public: // メンバ関数
 	//マテリアル読み込み
 	/// </summary>
 	static void LoadMaterial(const std::string& directoryPath, const std::string& filename);
+
+	void SetScale(const XMFLOAT3& scale) { this->scale = scale; }
+
+	const XMFLOAT3& GetScale()const { return scale; }
+
+	void SetRotation(const XMFLOAT3& rotation) { this->rotation = rotation; }
 
 private: // メンバ変数
 	//ComPtr<ID3D12Resource> constBuff; // 定数バッファ

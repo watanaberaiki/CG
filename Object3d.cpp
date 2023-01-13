@@ -108,7 +108,7 @@ Object3d * Object3d::Create()
 	}
 
 	//スケールをセット
-	float scale_val = 20;
+	float scale_val = 1;
 	object3d->scale = { scale_val,scale_val,scale_val };
 	
 	return object3d;
@@ -179,7 +179,7 @@ void Object3d::InitializeCamera(int window_width, int window_height)
 	//	0, 1);
 	// 透視投影による射影行列の生成
 	matProjection = XMMatrixPerspectiveFovLH(
-		XMConvertToRadians(60.0f),
+		XMConvertToRadians(45.0f),
 		(float)window_width / window_height,
 		0.1f, 1000.0f
 	);
@@ -627,7 +627,7 @@ bool Object3d::Initialize()
 	return true;
 }
 
-void Object3d::Update()
+void Object3d::Update(XMMATRIX &matView)
 {
 	HRESULT result;
 	XMMATRIX matScale, matRot, matTrans;
