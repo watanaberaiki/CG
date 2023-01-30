@@ -57,11 +57,10 @@ bool CheakCollision(XMFLOAT3 posA, XMFLOAT3 posB, XMFLOAT3 sclA, XMFLOAT3 sclB, 
 //Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//　基盤システムの初期化
-		//ポインタ
+	//ポインタ
 	Input* input = nullptr;
 	WinApp* winApp = nullptr;
 	DirectXCommon* dxCommon = nullptr;
-	/*SpriteCommon* spriteCommon = nullptr;*/
 
 
 	//WindowsAPIの初期化
@@ -77,55 +76,35 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	input = new Input();
 	input->Initialize(winApp);
 
-	SpriteCommon* spriteCommon = nullptr;
-	//スプライト共通部分の初期化
-	spriteCommon = new SpriteCommon;
-	spriteCommon->Initialize(dxCommon);
-	
 	//3Dオブジェクト静的初期化
 	Object3d::StaticInitialize(dxCommon->GetDevice(), winApp->window_width, winApp->window_height);
 
-
+	SpriteCommon* spriteCommon = nullptr;
+	//スプライト共通部の初期化
+	spriteCommon = new SpriteCommon;
+	spriteCommon->Initialize(dxCommon);
 
 
 	//基盤システムの初期化
 
-	//最初のシーンの初期化
-	//テキスト
-	Sprite* sprite = new Sprite();
-	sprite->Initialize(spriteCommon);
-	XMFLOAT2 position = sprite->GetPosition();
-	position.x = 400.0f;
-	position.y = 0.0f;
-	sprite->SetPozition(position);
-	XMFLOAT4 color = { 1,1,1,1 };
-	sprite->SetColor(color);
-	sprite->SetSize(XMFLOAT2{ 500.0f,281.0f });
+	spriteCommon->LoadTexture(0, "lavender.jpg");
+	spriteCommon->LoadTexture(1, "mario.jpg");
 
+
+	//最初のシーンの初期化
+	Sprite* sprite0 = new Sprite();
+	sprite0->Initialize(spriteCommon, 0);
 
 	Sprite* sprite1 = new Sprite();
-	sprite1->Initialize(spriteCommon);
-	XMFLOAT2 position1 = sprite1->GetPosition();
-	position1.x = 30.0f;
-	position1.y = 30.0f;
-	sprite1->SetPozition(position1);
-	XMFLOAT4 color1 = { 1,1,1,1 };
-	sprite1->SetColor(color1);
-	sprite1->SetSize(XMFLOAT2{ 200.0f,112.0f });
-
-	spriteCommon->LoadTexture(0, "Resources/mario.png");
-	sprite->SetTextureIndex(0);
-
-	spriteCommon->LoadTexture(1, "Resources/reimu.png");
-	sprite1->SetTextureIndex(1);
-
-
+	sprite1->Initialize(spriteCommon, 1);
+	sprite1->SetPosition({ 100,100 });
 	/*OBJからモデルデータを読み込む*/
 	//円柱
 	XMFLOAT3 minModel = {}, maxModel = {};
-	Model* model = Model::LoadFromObj("cylinder", minModel, maxModel);
+	Model* model = Model::LoadFromObj("wallcube", minModel, maxModel);
 	minModel = model->GetminModel();
 	maxModel = model->GetmaxModel();
+
 	//プレイヤー
 	XMFLOAT3 minModel2 = {}, maxModel2 = {};
 	Model* model2 = Model::LoadFromObj("cube", minModel2, maxModel2);
@@ -135,8 +114,9 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//天球(円柱)
 	Object3d* skyCylinder = Object3d::Create();
 	skyCylinder->SetModel(model);
-	skyCylinder->SetScale({ 50,50,500 });
-	skyCylinder->SetRotation({ 90,0,0 });
+	skyCylinder->SetScale({ 5,5,5 });
+	skyCylinder->SetPosition({ -10,-5,0 });
+	skyCylinder->SetRotation({ 0,0,0 });
 
 	//プレイヤー
 	Object3d* Player = Object3d::Create();
@@ -160,8 +140,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	matView = DirectX::XMMatrixLookAtLH(XMLoadFloat3(&eye), XMLoadFloat3(&target), XMLoadFloat3(&up));
 	float angle = 0.0f;//カメラの回転角
 
-	//シーン
-	Scene scene = Scene::title;
 
 	//最初のシーンの初期化
 
@@ -183,9 +161,21 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		//入力の更新
 		input->Update();
+
 		skyCylinder->Update(matView);
 		Player->Update(matView);
 
+		
+		XMFLOAT2 sprite0pos = sprite0->GetPosition();
+		sprite0pos.x += 0.5f;
+		sprite0->SetPosition(sprite0pos);
+
+		XMFLOAT2 sprite1pos = sprite1->GetPosition();
+		sprite1pos.x -= 0.5f;
+		sprite1->SetPosition(sprite0pos);
+
+		sprite0->Update();
+		sprite1->Update();
 
 		//// 4.描画コマンドここから
 
@@ -195,11 +185,19 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 		skyCylinder->Draw();
 		Player->Draw();
-
 		Object3d::PostDraw();
 
-		sprite->Draw();
+
+		spriteCommon->PreDraw();
+
+		sprite0->Draw();
+
 		sprite1->Draw();
+
+		spriteCommon->PostDraw();
+
+
+
 
 		//最初のシーンの描画
 
@@ -223,14 +221,17 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	delete winApp;
 	//DirectX解放
 	delete dxCommon;
-	////3dオブジェクト解放
-	//delete Player;
-	//////天球解放
-	////delete skyCylinder;
-	//////3Dモデル解放
-	////delete model;
+	delete spriteCommon;
+	delete sprite0;
+	delete sprite1;
+	//3dオブジェクト解放
+	delete Player;
+	//天球解放
+	delete skyCylinder;
+	//3Dモデル解放
+	delete model;
+	delete model2;
 
-	//delete model2;
 	//delete model3;
 	//delete model4;
 	////壁解放
@@ -247,9 +248,6 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	//}
 	////床開放
 	//delete floor;
-
-	//delete spriteCommon;
-
 	//基盤システムの終了
 
 	return 0;

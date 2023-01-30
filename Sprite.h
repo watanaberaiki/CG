@@ -1,142 +1,140 @@
 #pragma once
-#include"SpriteCommon.h"
+#include "SpriteCommon.h"
 #include <DirectXMath.h>
 
 using namespace DirectX;
+using namespace Microsoft::WRL;
 
-
-// 頂点データ構造体
-struct Vertex
+class Sprite
 {
-	XMFLOAT3 pos; // xyz座標
-	XMFLOAT2 uv;  // uv座標
-};
-//スプライト
-class Sprite {
+	//構造体
 public:
-	// 定数バッファ用データ構造体（マテリアル）
+	//頂点データ構造体
+	struct Vertex
+	{
+		XMFLOAT3 pos;
+		XMFLOAT2 uv;
+	};
+
+	//定数バッファ(マテリアル)
 	struct ConstBufferDataMaterial {
-		XMFLOAT4 color; // 色 (RGBA)
+		XMFLOAT4 color;
 	};
-	//定数バッファ用構造体（３D変換行列）
+
 	struct ConstBufferDataTransform {
-		XMMATRIX mat;	//3D変換行列
+		XMMATRIX mat;
 	};
 
-	//頂点番号
 	enum VertexNumber {
-		LB,//左下
-		LT,//左上
-		RB,//右下
-		RT,//右上
+		LB,
+		LT,
+		RB,
+		RT
 	};
-public:
-	//初期化
-	void Initialize(SpriteCommon* spritecommon_);
 
-	void Draw();
+public:
+
+	//初期化
+	void Initialize(SpriteCommon* spriteCommon, uint32_t textureIndex = UINT32_MAX);
 
 	void Update();
 
-	void SetPozition(const XMFLOAT2& position_);
+	void Draw();
 
-	const XMFLOAT2& GetPosition() const { return position; }
+	XMFLOAT4 GetColor() const { return color; }
 
-	void SetRotation(float rotation_);
+	const XMFLOAT2 GetPosition() const { return position_; }
 
-	float GetRotation() { return rotation; }
+	const float& GetRotationZ() const { return rotationZ; }
 
-	void SetColor(const XMFLOAT4& color_) { color = color_; }
+	const XMFLOAT2 GetSize() const { return size_; }
 
-	XMFLOAT4 GetColor() { return color; }
+	const XMFLOAT2 GetAnchorPoint() const { return anchorPoint_; }
 
-	void SetScale(const XMFLOAT3& scale_) { scale = scale_; }
+	const bool& GetIsFlipX() const { return isFlipX; }
 
-	XMFLOAT3 GetScale() { return scale; }
+	const bool& GetIsFlipY() const { return isFlipY; }
 
-	void SetAnchorPoint(const XMFLOAT2& anchorPoint_) { anchorPoint = anchorPoint_; }
+	const bool& GetIsInvisible() const { return isInvisible_; }
 
-	XMFLOAT2 GetAnchorPoint() { return anchorPoint; }
+	const uint32_t GetTextureIndex() const { return textureIndex_; }
 
-	void SetTextureIndex(uint32_t texNmb) { textureIndex_ = texNmb; }
+	const XMFLOAT2 GetTextureLeftTop() const { return textureLeftTop_; }
 
-	uint32_t GetTextureIndex() { return textureIndex_; }
+	const XMFLOAT2 GetTextureSize() const { return textureSize_; }
 
-	void SetTexSize(XMFLOAT2 texSize) { textureSize = texSize; }
 
-	XMFLOAT2 GetTexSize() { return textureSize; }
 
-	XMFLOAT2 GetSize() { return size_; }
 
-	void SetSize(XMFLOAT2 size);
 
-	/// 上下反転の設定
-	void SetIsFlipY(bool isFlipY);
+	void SetColor(XMFLOAT4 color) { this->color = color; }
 
-	/// 左右反転の設定
-	void SetIsFlipX(bool isFlipX);
+	void SetPosition(const XMFLOAT2& position) { this->position_ = position; }
+
+	void SetRotationZ(const float& rotationZ) { this->rotationZ = rotationZ; }
+
+	void SetSize(const XMFLOAT2& size) { this->size_ = size; }
+
+	void SetAnchorPoint(const XMFLOAT2& anchorPoint) { this->anchorPoint_ = anchorPoint; }
+
+	void SetIsFlipX(const bool& isFlipX) { this->isFlipX = isFlipX; }
+
+	void SetIsFlipY(const bool& isFlipY) { this->isFlipY = isFlipY; }
+
+	void SetIsInvisible(const bool& isInvisible) { this->isInvisible_ = isInvisible; }
+
+	void SetTextureIndex(const uint32_t& textureIndex) { this->textureIndex_ = textureIndex; }
+
+	void SetTextureLeftTop(const XMFLOAT2& textureLeftTop) { this->textureLeftTop_ = textureLeftTop; }
+
+	void SetTextureSize(const XMFLOAT2& textureSize) { this->textureSize_ = textureSize; }
 
 private:
-	SpriteCommon* spritecomon;
-	HRESULT result;
-	// 頂点データ
-	Vertex vertices[4] = {
-		// x      y     z       u     v
-		{{-0.4f, -0.7f, 0.0f}, {0.0f, 1.0f}}, // 左下
-		{{-0.4f, +0.7f, 0.0f}, {0.0f, 0.0f}}, // 左上
-		{{+0.4f, -0.7f, 0.0f}, {1.0f, 1.0f}}, // 右下
-		{{+0.4f, +0.7f, 0.0f}, {1.0f, 0.0f}}, // 右上
-	};
+	void AdjustTextureSize();
 
-	// 頂点バッファビューの作成
-	D3D12_VERTEX_BUFFER_VIEW vbView{};
+private:
 
-	XMMATRIX matScale;//スケーリング行列
-	XMMATRIX matWorld;
-	XMMATRIX matRot;//回転行列
-	XMMATRIX  matTrans;//平行移動行列
+	SpriteCommon* spriteCommon_ = nullptr;
 
-	//座標
-	XMFLOAT3 scale{ 0.5f, 0.5f, 1.0f };
-
-	XMFLOAT2 size_ = { 100.0f,100.0f };
-
-	float rotation = 0.0f;
-	XMFLOAT2 position = { 0.0f, 0.0f };
-
-	XMFLOAT4 color = { 1,1,1,1 };
-
-	XMFLOAT2 anchorPoint = { 0.0f,0.0f };
-
-	ID3D12Resource* constBuffTransform = nullptr;
-	ConstBufferDataTransform* constMapTransform = nullptr;
-
-	ConstBufferDataMaterial* constMapMaterial = nullptr;
-
-	ID3D12Resource* constBuffMaterial = nullptr;
-
-	Vertex vertices_[4];
-
-	Vertex* vertMap = nullptr;
-
-	//テクスチャ番号
 	uint32_t textureIndex_ = 0;
 
-	//テクスチャ左上座標
-	XMFLOAT2 textureLeftTop = { 0.0f,0.0f };
-	//テクスチャ切り出しサイズ
-	XMFLOAT2 textureSize = { 100.0f,100.0f };
+	XMFLOAT4 color = { 1,0,0,0.5f };
+
+	float rotationZ;
+	XMFLOAT2 position_;
+
+	XMFLOAT2 size_ = { 200.0f,200.0f };
+
+	XMFLOAT2 anchorPoint_ = { 0.0f,0.0f };
+
+	bool isFlipX = false;
+	bool isFlipY = false;
+
+	bool isInvisible_ = false;
+
+	Vertex vertices[4];
+
+	XMFLOAT2 textureLeftTop_ = { 0.0f,0.0f };
+
+	XMFLOAT2 textureSize_ = { 100.0f,100.0f };
+
+	//ワールド変換行列
+	XMMATRIX matWorld;
+	XMMATRIX matRot;
+	XMMATRIX matTrans;
 
 	XMMATRIX matProjection;
 
-	// アンカーポイント
-	XMFLOAT2 anchorpoint = { 0, 0 };
 
-	// 頂点バッファの生成
-	ID3D12Resource* vertBuff = nullptr;
 
-	// 左右反転
-	bool isFlipX = false;
-	// 上下反転
-	bool isFlipY = false;
+	ComPtr<ID3D12Resource> vertBuff;
+
+	D3D12_VERTEX_BUFFER_VIEW vbView{};
+
+	ComPtr<ID3D12Resource> constBuffMaterial;
+	ConstBufferDataMaterial* constMapMaterial = nullptr;
+
+	ComPtr<ID3D12Resource> constBufferTransform;
+	ConstBufferDataTransform* constMapTransform = nullptr;
+
 };

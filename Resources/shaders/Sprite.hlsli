@@ -1,12 +1,17 @@
-cbuffer cbuff0 : register(b0)
+cbuffer ConstBufferDataMaterial : register(b0)
 {
 	float4 color;
-	matrix mat;
-};
+}
 
+cbuffer ConstBufferDataTransform : register(b1)
+{
+	matrix mat;
+}
 
 struct VSOutput
 {
+
 	float4 svpos : SV_POSITION;
-	float2 uv :TEXCOORD;
+	float3 normal : NORMAL;
+	float2 uv : TEXCOORD;
 };
