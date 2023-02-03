@@ -97,7 +97,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	Sprite* sprite1 = new Sprite();
 	sprite1->Initialize(spriteCommon, 1);
-	sprite1->SetPosition({ 100,100 });
+	sprite1->SetPosition({ 800,300 });
 	/*OBJからモデルデータを読み込む*/
 	//円柱
 	XMFLOAT3 minModel = {}, maxModel = {};
@@ -165,15 +165,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		skyCylinder->Update(matView);
 		Player->Update(matView);
 
-		
-		XMFLOAT2 sprite0pos = sprite0->GetPosition();
-		sprite0pos.x += 0.5f;
-		sprite0->SetPosition(sprite0pos);
-
-		XMFLOAT2 sprite1pos = sprite1->GetPosition();
-		sprite1pos.x -= 0.5f;
-		sprite1->SetPosition(sprite0pos);
-
+		if (input->PushKey(DIK_SPACE)) {
+			XMFLOAT2 sprite0pos = sprite0->GetPosition();
+			sprite0pos.x += 0.5f;
+			sprite0->SetPosition(sprite0pos);
+		}
+		if (input->TriggerKey(DIK_SPACE)) {
+			XMFLOAT2 sprite1pos = sprite1->GetPosition();
+			sprite1pos.x -= 1.5f;
+			sprite1->SetPosition(sprite1pos);
+		}
 		sprite0->Update();
 		sprite1->Update();
 
